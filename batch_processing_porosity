@@ -1,0 +1,10 @@
+run("8-bit");
+run("Set Scale...", "distance=970.5 known=1000 unit=um global");
+setTool(2); 
+makePolygon(350,650,6900,650,6900,10200,5300,10200,5300,10600,350,10600); 
+setThreshold(0, 161);
+setBatchMode(false);
+//Table.deleteRows(0, 5);
+waitForUser("Draw ROI, then hit OK"); 
+run("Measure");
+setBatchMode(true);
