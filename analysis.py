@@ -8,7 +8,7 @@ with open('data.csv', 'r') as csvfile:
                 if (Eid, int(row["S"+ str(Eid)])) in experiments:                    
                     experiments[(Eid, int(row["S"+ str(Eid)]))].append(float(row["HV"+ str(Eid)]))
                 elif row["S"+ str(Eid)]:                    
-                    experiments[(Eid, int(row["S445"]))]=[float(row["HV"+ str(Eid)])]
+                    experiments[(Eid, int(row["S"+str(Eid)]))]=[float(row["HV"+ str(Eid)])]
             except:
                 pass
                     
