@@ -3,7 +3,7 @@ function main() {
     // Vertical Tensile cylinders
     var radcyl = 4;
     var hcyl = 70;
-    var resolut = 4;
+    var resolut = 5;
     var cyl1coord = [
         [15, 15],
         [15, -15],
@@ -14,7 +14,7 @@ function main() {
     var angle=1.05*Math.PI;
     var cyl2coord = [
         [25,100,angle],
-        [85,100,angle],
+        [10,100,angle],
         [70,100,angle],
         [55,100,angle],
         [40,100,angle]];
@@ -41,11 +41,11 @@ function main() {
         ];
 // Charpy specimens
     var charpcoord1 =[
-        [80,40],
-        [80,20],
-        [80,0],
-        [80,-20],
-        [80,-40]
+        [80,-60,0],
+        [80,20,0],
+        [80,0,0],
+        [80,-20,0],
+        [80,-40,0]
         ];
     for (var i = 0; i < cyl1coord.length; i++)
     {
@@ -80,6 +80,17 @@ function main() {
         resolution: resolut
         });
          w.push(lecocyl);
+    }
+    for (var m = 0; m < charpcoord1.length; m++)
+    {
+        var charpcube=CSG.cube({ 
+            corner1: charpcoord1[m],
+            corner2: [charpcoord1[m][0]+10,
+            charpcoord1[m][1]+10,
+            charpcoord1[m][2]+55 // Standard 55
+            ]
+        });
+         w.push(charpcube);
     }
     return w;
 }
