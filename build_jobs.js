@@ -3,17 +3,17 @@ function main() {
     // Vertical Tensile cylinders
     var radcyl = 4;
     var hcyl = 70;
-    var resolut = 3;
+    var resolut = 4;
     var cyl1coord = [
-        [10, 10],
-        [20, -20],
-        [-20, 20],
-        [-20, -20]];
+        [15, 15],
+        [15, -15],
+        [-15, 15],
+        [-15, -15]];
 // Horizontal Tensile cylinders
     var cyl2uber = 6;
     var angle=1.05*Math.PI;
     var cyl2coord = [
-        [100,100,angle],
+        [25,100,angle],
         [85,100,angle],
         [70,100,angle],
         [55,100,angle],
@@ -38,6 +38,14 @@ function main() {
         [Math.sqrt(20)-lecocon,0-lecocon],
         [-2-lecocon,4-lecocon],
         [-2-lecocon,-4-lecocon]
+        ];
+// Charpy specimens
+    var charpcoord1 =[
+        [80,40],
+        [80,20],
+        [80,0],
+        [80,-20],
+        [80,-40]
         ];
     for (var i = 0; i < cyl1coord.length; i++)
     {
