@@ -1,9 +1,32 @@
 var w = new Array();
 function main() {
+    // Vertical Tensile cylinders
     var radcyl = 4;
     var hcyl = 70;
-    var resolut =5;
-    var cyl1coord = [[10, 10], [20, -20], [-20, 20], [-20, -20]];
+    var resolut = 3;
+    var cyl1coord = [
+        [10, 10],
+        [20, -20],
+        [-20, 20],
+        [-20, -20]];
+// Horizontal Tensile cylinders
+    var cyl2uber = 6;
+    var angle=1.05*Math.PI;
+    var cyl2coord = [
+        [100,100,angle],
+        [85,100,angle],
+        [70,100,angle],
+        [55,100,angle],
+        [40,100,angle]];
+// LECO cylinders
+    var lecorad=1.75;
+    var lecoh =8;
+    var lecocoord = [
+        [Math.sqrt(20),0],
+        [-2,4],
+        [-2,-4],
+        
+        ];
     for (var i = 0; i < cyl1coord.length; i++)
     {
         var cyl1=CSG.cylinder({
@@ -14,12 +37,7 @@ function main() {
         });
          w.push(cyl1);
     }
-    var cyl2uber = 6;
-    var angle=1.05*Math.PI;
-    var cyl2coord = [[60,60,angle],[70,70,angle],
-    [100,100,angle],
-    [90,90,angle],
-    [80,80,angle]];
+    
     for (var j = 0; j < cyl2coord.length; j++)
     {
         var cyl2=CSG.cylinder({
@@ -32,6 +50,16 @@ function main() {
         resolution: resolut
         });
          w.push(cyl2);
+    }
+    for (var k = 0; k < lecocoord.length; k++)
+    {
+        var lecocyl=CSG.cylinder({
+        start: lecocoord[k].concat([0]),
+        end: lecocoord[k].concat([lecoh]),
+        radius: lecorad,
+        resolution: resolut
+        });
+         w.push(lecocyl);
     }
     return w;
 }
