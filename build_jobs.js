@@ -2,7 +2,7 @@ var w = new Array();
 function main() {
     var radcyl = 4;
     var hcyl = 70;
-    var resolut = 7;
+    var resolut =5;
     var cyl1coord = [[10, 10], [20, -20], [-20, 20], [-20, -20]];
     for (var i = 0; i < cyl1coord.length; i++)
     {
@@ -14,10 +14,12 @@ function main() {
         });
          w.push(cyl1);
     }
-    var cyl2uber = 50;
-    var angle=Math.PI/3;
-    var cyl2coord = [[30,0,angle],[-30,0,angle],[0,30,angle],
-    [0,-30,angle]];
+    var cyl2uber = 6;
+    var angle=1.05*Math.PI;
+    var cyl2coord = [[60,60,angle],[70,70,angle],
+    [100,100,angle],
+    [90,90,angle],
+    [80,80,angle]];
     for (var j = 0; j < cyl2coord.length; j++)
     {
         var cyl2=CSG.cylinder({
