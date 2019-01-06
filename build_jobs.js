@@ -21,11 +21,20 @@ function main() {
 // LECO cylinders
     var lecorad=1.75;
     var lecoh =8;
+    var lecocon=100;
     var lecocoord = [
         [Math.sqrt(20),0],
         [-2,4],
         [-2,-4],
-        
+        [lecocon+Math.sqrt(20),lecocon+0],
+        [lecocon-2,lecocon+4],
+        [lecocon-2,lecocon-4],
+        [Math.sqrt(20)-lecocon,lecocon+0],
+        [-lecocon-2,lecocon+4],
+        [-lecocon-2,lecocon-4],
+        [Math.sqrt(20)-lecocon,0-lecocon],
+        [-2-lecocon,4-lecocon],
+        [-2-lecocon,-4-lecocon]
         ];
     for (var i = 0; i < cyl1coord.length; i++)
     {
