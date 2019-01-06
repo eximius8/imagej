@@ -8,7 +8,8 @@ function main() {
         [15, 15],
         [15, -15],
         [-15, 15],
-        [-15, -15]];
+        [-15, -15],
+        [0,-28]];
 // Horizontal Tensile cylinders
     var cyl2uber = 6;
     var angle=1.05*Math.PI;
@@ -46,6 +47,14 @@ function main() {
         [80,0,0],
         [80,-20,0],
         [80,-40,0]
+        ];
+// cubes 8x8x13
+    var cubecoord =[
+        [60,-60,0],
+        [60,-80,0],
+        [60,0,0],
+        [60,-20,0],
+        [60,-40,0]
         ];
     for (var i = 0; i < cyl1coord.length; i++)
     {
@@ -91,6 +100,17 @@ function main() {
             ]
         });
          w.push(charpcube);
+    }
+     for (var n = 0; n < cubecoord.length; n++)
+    {
+        var cube88=CSG.cube({ 
+            corner1: cubecoord[n],
+            corner2: [cubecoord[n][0]+8,
+            cubecoord[n][1]+8,
+            cubecoord[n][2]+13 // Standard 13
+            ]
+        });
+         w.push(cube88);
     }
     return w;
 }
