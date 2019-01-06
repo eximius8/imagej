@@ -32,6 +32,9 @@ function main() {
         [Math.sqrt(20)-lecocon,lecocon+0],
         [-lecocon-2,lecocon+4],
         [-lecocon-2,lecocon-4],
+        [Math.sqrt(20)+lecocon,0-lecocon],
+        [-2+lecocon,4-lecocon],
+        [-2+lecocon,-4-lecocon],
         [Math.sqrt(20)-lecocon,0-lecocon],
         [-2-lecocon,4-lecocon],
         [-2-lecocon,-4-lecocon]
