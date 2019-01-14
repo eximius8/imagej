@@ -4,7 +4,7 @@ function main () {
     var tryag =linear_extrude({ height: 55 }, 
         polygon({ points: [ [7,2],[7,-2],[12,0]] }));
     var tryag2=linear_extrude({ height: 50 }, 
-        polygon({ points: [ [28,7],[28,-7],[-30,-3],[-30,3]] }));
+        polygon({ points: [ [28,6.5],[28,-6.5],[-30,-3],[-30,3]] }));
         
     var rad_val=[0.5,1,1.5,2,2.5,3,3.5];
     var cyl_x=[-26.5,-22,-16,-9,0,10,22];
