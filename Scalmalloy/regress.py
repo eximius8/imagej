@@ -15,7 +15,7 @@ with open('for_regression.csv', 'r') as csvfile:
             try:
                 lis.append(float(row['PI'+str(eid)].replace(',','.')))
             except:
-                print('cube '+row['cube']+' has missing values' )
+                pass #print('cube '+row['cube']+' has missing values' )
         if int(row['cube']) in experiments:
             experiments[int(row['cube'])]=experiments[int(row['cube'])]+lis
         else:
@@ -42,7 +42,9 @@ matrixX=[]
 for key, value in aver.items():
     vectorY.append(100-aver[key])
     # Matrix can be adjusted for the best model *******
-    matrixX.append([1]+param[key]+[param[key][0]*param[key][1]*param[key][2]])
+    matrixX.append([1]+param[key]+[param[key][0]*param[key][1]]+[param[key][0]*param[key][2]]\
+                   +[param[key][1]*param[key][2]]\
+                   +[param[key][0]*param[key][1]*param[key][2]])
 
 # Elements of normal equation    
 matrixX=np.array(matrixX)
@@ -57,11 +59,12 @@ final=inverrr.dot(matrixXT.dot(vectorY))
 # here par - list of the form [Laser Power, Hatch, Scan speed]
 def solut(par):
     # adjust function according to matrix form from ******
-    return final[0]+final[1]*par[0]+final[2]*par[1]+final[3]*par[2]+final[4]*par[0]*par[1]*par[2]
+    return final[0]+final[1]*par[0]+final[2]*par[1]+final[3]*par[2] \
+           +par[0]*par[1]*final[4]+par[0]*par[2]*final[5]+par[1]*par[2]*final[6]+final[7]*par[0]*par[1]*par[2]
 
 # function for plotting nice thesis graphics
 def solut2(powr,sped):
-    return final[0]+final[1]*powr+final[2]*0.1+final[3]*sped+final[4]*powr*0.1*sped
+    return solut([powr,0.1,sped])   
 vfunc = np.vectorize(solut2)
 
 # For plotting
@@ -69,6 +72,23 @@ x=[]
 y=[]
 yc=[]
 e=[]
+
+def plotcont():
+    x = np.linspace(300, 370, 100)
+    y = np.linspace(1000, 2000, 100)
+    X, Y = np.meshgrid(x, y)
+    Z = solut2(X, Y)
+    plt.figure()
+    contourplot = plt.contourf(X,Y,Z, cmap=plt.cm.bone,
+                  origin='lower')
+    
+##ax.set_xlabel('Laser power [W]', )
+##ax.set_ylabel('Scan speed [mm/s]', )
+    
+    cbar = plt.colorbar(contourplot)
+    plt.xlabel('Laser power [W]', )
+    plt.ylabel('Scan speed [mm/s]', )
+
 
 
  
@@ -89,19 +109,21 @@ X, Y = np.meshgrid(X, Y)
 Z=vfunc(X,Y)
 
 
-mpl.rcParams['legend.fontsize'] = 10
+#mpl.rcParams['legend.fontsize'] = 10
 #fig = plt.figure()
 #ax = fig.add_subplot(111, projection='3d')
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 print(r2_score(y, yc))
+print(final)
 ax.plot_wireframe(X, Y, Z, color='b',label='Predicted model $R^2=$'+str("%.2f" % round(r2_score(y, yc),2)))
 power=[]
 speed=[]
 density=[]
 for key, value in param.items():
     if value[1]==0.1:
+     #   print(value)
         power.append(value[0])
         speed.append(value[2])
         density.append(100-aver[key])
@@ -112,6 +134,10 @@ ax.set_xlabel('Laser power [W]', )
 ax.set_ylabel('Scan speed [mm/s]', )
 ax.legend()
 
+print(solut([300,0.1,3000]))
+print(100-aver[50])
+
+#plotcont()
 
 plt.show()
 
