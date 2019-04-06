@@ -1,40 +1,70 @@
-import csv
 from sklearn.metrics import r2_score
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
+from reading_data import *
 
 class cubes:
     def __init__(self,par_list,cube_list):
         self.cubes=cube_list
         self.param=par_list
+        self.STDflag=False
+        if type(cube_list[1]) is list:
+            self.STDflag=True
         
     def vectY(self,start, end):
         y=[]
         for i in range(start,end):
-            y.append(self.cubes[i])
+            if self.STDflag:
+                y.append(self.cubes[i][0])
+            else:
+                y.append(self.cubes[i])
         return y
+    
+    def vectSTD(self,start, end):
+        if not self.STDflag:
+            raise NameError('No STD was found')
+        seem=[]
+        for i in range(start,end):
+            seem.append(self.cubes[i][1])
+        return seem
+    
     def matrX(self, start, end):
         x=[]
         for i in range(start,end):
             x.append(self.param[i])
         return x
+    def plt_2dd(self, num_list, Flag):
+        # plots 2D plot of Relative density vs Power (Flag=0) or hatch (Flag=1) or speed (Flag=2) 
+        # num_list - list of cube IDs
+        y=[]
+        x=[]
+        for item in num_list:
+            y.append(self.cubes[item])
+            x.append(self.param[item][Flag])
+        fig = plt.figure()
+        plt.plot(x,y)
+        plt.show()
+        
+            
 
 class regresss:
-'''This class is for regression analysis it takes matrix of parameters and vector of outputs and solves normal equation
-the fitted model or hypothesis function is labeled with ****'''
+#This class is for regression analysis it takes matrix of parameters and vector of outputs and solves normal equation
+#the fitted model or hypothesis function is labeled with ****'''
     def __init__(self,parametri,density):
         def model(self,param):
-            ''' takes a list of parameters, adjusts the list according to hypothesis function
-                returns a list according to hypothesis function'''
+#  takes a list of parameters, adjusts the list according to hypothesis function
+#  returns a list according to hypothesis function'''
             powr=param[0]
             hatch=param[1]
             sped=param[2]
-            model=[1, powr, sped**2, powr/sped,powr*sped] #**** fitted model (hypothesis function) in the form of list
-            return model
+            self.modell=[1,powr,sped]# sped**2, powr/sped,powr*sped] #**** fitted model (hypothesis function) in the form of list
+            return self.modell
         self.model=model # make model an instance of this class
-        self.parametri=parametri        
+        self.parametri=parametri
+        self.density=density
+       # print(self.density)
         self.vectrY=np.array(density) 
         self.matrixAX=[]
         for i in range(len(self.parametri)):
@@ -63,60 +93,185 @@ the fitted model or hypothesis function is labeled with ****'''
     def r2(self):
         # returns coefficient of correlation for hypothesis function
         return r2_score(self.vectrY,self.predictX())
+    def r2_adj(self):
+        #returns adjusted R^2 n - sample size p - number of parameters
+        n=len(self.parametri)
+        p=len(self.modell)-1
+        return 1-(1-self.r2())*(n-1)/(n-p-1)
+    
+    def plt_3dd(self):
+        # plots 3d plot of hypothesis function with experimental points as dots
+        Pmax=0
+        Pmin=1000
+        vmax=0
+        vmin=1000000000000
+      #  print(self.parametri)
+        power=[]
+        speed=[]
+        for value in self.parametri:
+            power.append(value[0])
+            speed.append(value[2])
+            if value[0]>Pmax:
+                Pmax=value[0]
+            if value[0]<Pmin:
+                Pmin=value[0]
+            if value[2]>vmax:
+                vmax=value[2]
+            if value[2]<vmin:
+                vmin=value[2] 
+       #print(vmin)
+        X = np.arange(Pmin, Pmax+2, 2)
+        Y = np.arange(vmin, vmax+10, 10)
+        X, Y = np.meshgrid(X, Y)
+        def func(p,v):
+            return self.predict([p,0.2,v])
+        vfunc = np.vectorize(func)
+        Z=vfunc(X,Y)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+### Plot real values as points
+        ax.scatter(power, speed, self.vectrY, c='r', marker='o')
+        ax.plot_surface(X, Y, Z, color='b')
+        plt.show()
+
+    def plt_count(self):
+        # plots countor plot of hypothesis function with experimental points as dots
+        Pmax=0
+        Pmin=1000
+        vmax=0
+        vmin=1000000000000
+      #  print(self.parametri)
+        power=[]
+        speed=[]
+        for value in self.parametri:
+            power.append(value[0])
+            speed.append(value[2])
+            if value[0]>Pmax:
+                Pmax=value[0]
+            if value[0]<Pmin:
+                Pmin=value[0]
+            if value[2]>vmax:
+                vmax=value[2]
+            if value[2]<vmin:
+                vmin=value[2] 
+        #print(vmin)
+        X = np.arange(Pmin, Pmax+2, 2)
+        Y = np.arange(vmin, vmax+10, 10)
+        X, Y = np.meshgrid(X, Y)
+        def func(p,v):
+            return self.predict([p,0.2,v])
+        vfunc = np.vectorize(func)
+        Z=func(X,Y)
+        fig = plt.figure()
+        contourplot = plt.contourf(X,Y,Z, cmap=plt.cm.bone,
+                  origin='lower')
+### Plot real values as points
+        cbar = plt.colorbar(contourplot)
+        plt.xlabel('Laser power [W]', )
+        plt.ylabel('Scan speed [mm/s]', )
+        plt.show()
+
+   
         
         
-def archimedes_read():
-# read csv file with raw Archimedes measurements
-# returns array with cube number as index and a list with 3 relative densitites (relative_density)
-# return average of three relative densities for three measurements (rel_dens_av)
-    real_density={}
-    max_realD1,max_realD2,max_realD3=0,0,0    
-    relative_density={}
-    rel_dens_av={}
-    with open('archim536_raw.csv', 'r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        row1 = next(reader)
-        rhoAir=float(row1['mAir'])
-        rhoAc1=float(row1['mAc1'])
-        rhoAc2=float(row1['mAc2'])
-        rhoAc3=float(row1['mAc3'])       
-        for row in reader:
-            mAir=float(row['mAir'])
-            mAc1=float(row['mAc1'])
-            mAc2=float(row['mAc2'])
-            mAc3=float(row['mAc3'])
-            realD1=(rhoAc1-rhoAir)*mAir/(mAir-mAc1)+rhoAir            
-            realD2=(rhoAc2-rhoAir)*mAir/(mAir-mAc2)+rhoAir
-            realD3=(rhoAc3-rhoAir)*mAir/(mAir-mAc3)+rhoAir
-            if realD1>max_realD1:
-                max_realD1=realD1
-            if realD2>max_realD2:
-                max_realD2=realD2
-            if realD3>max_realD3:
-                max_realD3=realD3
-            real_density[int(row['Sample'])]=[realD1,realD2,realD3]
-    for key,value in real_density.items():
-        relative_density[key]=[value[0]/max_realD1, value[1]/max_realD2, value[2]/max_realD3]
-        rel_dens_av[key]=(value[0]/max_realD1+value[1]/max_realD2+value[2]/max_realD3)/3.
-    return rel_dens_av#relative_density
 
-def parameter_read():
-# returns paraemters dictionary with cube number as index and list of the form [Power, Hatch, Speed]
-    parameters={}
-    with open('parameters.csv', 'r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            parameters[int(row['Cube'])]=[float(row['Power']), \
-                                          float(row['Hatch']), \
-                                          float(row['Speed'])]
-    return parameters
+#sett=cubes(parameter_read(),archimedes_read())
+
+flagg=True
+suffix='P_ab_100px'#'BP'#'BP'
+set1=cubes(parameter_read(),micro_read('ID536'+suffix+'.csv',flagg))
+set2=cubes(parameter_read(),micro_read('ID537'+suffix+'.csv',flagg))
+set3=cubes(parameter_read(),micro_read('ID538'+suffix+'.csv',flagg))
+set4=cubes(parameter_read(),micro_read('ID539'+suffix+'.csv',flagg))
+#set5=cubes(parameter_read(),micro_read('ID539BP.csv'))
+set6=cubes(parameter_read(),micro_read('ID540'+suffix+'.csv',flagg))
+#set7=cubes(parameter_read(),micro_read('ID540BP.csv'))
+set8=cubes(parameter_read(),micro_read('ID541'+suffix+'.csv',flagg))
+#set9=cubes(parameter_read(),micro_read('ID541BP.csv'))
 
 
 
-sett=cubes(parameter_read(),archimedes_read())
-regr112=regresss(sett.matrX(25,37),sett.vectY(25,37))
-#regr112.predict([200,0.1,1400])
-print(regr112.r2())
+#print(micro_read('ID540P.csv'))
+#print(parameter_read())
+#fig = plt.figure()
+        
+        
+i=536
+sets={
+    '1000 ppm': set1,
+    '800 ppm': set2,
+    '600 ppm': set3,
+    '400 ppm': set4,
+    '200 ppm': set6,
+    '0 ppm': set8
+}
+##markerr=6
+for key,sett in sets.items():
+##    y=sett.vectY(37,43)
+##    x=[]
+##    for paramet in sett.matrX(37,43):
+##        x.append(paramet[2])
+##    plt.errorbar(x, y, sett.vectSTD(37,43),label=key,marker=markerr)
+##    markerr=markerr+1
+
+##for key,sett in sets.items():
+##    y=sett.vectY(43,49)
+##    x=[]
+##    for paramet in sett.matrX(43,49):
+##        x.append(paramet[1])
+##    #plt.plot(x,y,label=key,marker=markerr)
+##    
+##    plt.errorbar(x, y, sett.vectSTD(43,49),label=key,marker=markerr)
+##    markerr=markerr+1
+##   # print(sett.vectSTD(43,49))
+##    #print(sett.vectY(43,49))
+#plt.legend()
+
+#plt.show()
+
+    regr112=regresss(sett.matrX(1,13),sett.vectY(1,13))
+    regr=regresss(sett.matrX(1,37),sett.vectY(1,37))
+    regr1324=regresss(sett.matrX(13,25),sett.vectY(13,25))
+    regr2536=regresss(sett.matrX(25,37),sett.vectY(25,37))
+    print(i)
+    #print(sett.matrX(37,44))
+    
+    i=i+1
+    #print(regr.r2())
+    #print(regr.r2_adj())
+    print(regr112.r2())
+    print(regr112.r2_adj())
+    print(regr1324.r2())
+    print(regr1324.r2_adj())
+    print(regr2536.r2())
+    print(regr2536.r2_adj())
+   # regr2536.plt_count()
+
+#plt.show()
+
+#set1.plt_2dd([37,38,39,40,41,42],2)
+#set2.plt_2dd([37,38,39,40,41,42],2)
+#set3.plt_2dd([37,38,39,40,41,42],2)
+#set4.plt_2dd([37,38,39,40,41,42],2)
+#set5.plt_2dd([37,38,39,40,41,42],2)
+#set6.plt_2dd([37,38,39,40,41,42],2)
+#set7.plt_2dd([37,38,39,40,41,42],2)
+#set8.plt_2dd([37,38,39,40,41,42],2)
+#set9.plt_2dd([37,38,39,40,41,42],2)
+
+#set1.plt_2dd([43,44,45,46,47,48],1)
+#set2.plt_2dd([43,44,45,46,47,48],1)
+#set3.plt_2dd([43,44,45,46,47,48],1)
+#set4.plt_2dd([43,44,45,46,47,48],1)
+#set5.plt_2dd([43,44,45,46,47,48],1)
+#set6.plt_2dd([43,44,45,46,47,48],1)
+#set7.plt_2dd([43,44,45,46,47,48],1)
+#set8.plt_2dd([43,44,45,46,47,48],1)
+#set9.plt_2dd([43,44,45,46,47,48],1)
+
+
+#regr112.plt_3dd()
+
 
 #print(regress_calc(cubes.matrX,cubes.vectY))
 
@@ -172,13 +327,4 @@ print(regr112.r2())
 ##fig = plt.figure()
 ##ax = fig.add_subplot(111, projection='3d')
 ##
-### Plot predicted function
-##X = np.arange(330, 360, 2)
-##Y = np.arange(1000, 1300, 20)
-##X, Y = np.meshgrid(X, Y)
-##Z=vfunc(X,Y)
-### Plot real values as points
-##ax.scatter(power, speed, density, c='r', marker='o')
-##ax.plot_surface(X, Y, Z, color='b')
-##
-##plt.show()
+
