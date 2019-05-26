@@ -39,3 +39,22 @@ roiManager("Select", 0);
 roiManager("Save", getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+".roi");
 roiManager("Deselect");
 roiManager("Delete");
+
+// Measuring latest
+
+setBatchMode(true);
+run("8-bit");
+setAutoThreshold("Default");
+roiManager("Open",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+".roi");
+roiManager("Select", 0);
+run("Analyze Particles...", "size=5-4000 display include summarize record");
+roiManager("Deselect");
+roiManager("Delete");
+selectWindow("Results");
+saveAs("Results",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+".csv");
+run("Clear Results");
+selectWindow("Summary");
+saveAs("Text",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+"S.csv");
+close();
+selectWindow(substring(File.name,0,2)+"S.csv");
+close();
