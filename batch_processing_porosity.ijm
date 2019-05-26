@@ -53,8 +53,7 @@ roiManager("Delete");
 selectWindow("Results");
 saveAs("Results",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+".csv");
 run("Clear Results");
-selectWindow("Summary");
-saveAs("Text",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+"S.csv");
+//selectWindow("Summary");
+//saveAs("Text",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+"S.csv");
 close();
-selectWindow(substring(File.name,0,2)+"S.csv");
-close();
+
