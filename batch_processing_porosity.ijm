@@ -29,4 +29,13 @@ selectWindow("Summary");
 saveAs("Text",getDirectory("image")+substring(File.name,0,2)+"S.csv");
 close();
 
-
+// create ROIs for subsequent measurements
+setTool(2); 
+setBatchMode(false);
+waitForUser("Draw ROI, then hit OK"); 
+setBatchMode(true);
+roiManager("Add");
+roiManager("Select", 0);
+roiManager("Save", getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+".roi");
+roiManager("Deselect");
+roiManager("Delete");
