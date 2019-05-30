@@ -57,3 +57,42 @@ run("Clear Results");
 //saveAs("Text",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+"S.csv");
 close();
 
+
+// Looping folders
+
+setBatchMode(true);
+for (j = 36; j < 42; i++)
+{
+	folder='/home/mike/OldHome/Pictures/ID5'+i+'/';	
+	for (i = 1; i < 49; i++)
+	{
+	    if (i<10)
+            {
+            	action(""+folder+"0"+i+".jpg" );
+            }
+        else 
+        {
+        	action(""+folder+i+".jpg" );
+        }
+	}
+     selectWindow("Summary");
+     saveAs("Text",folder+"RoiCsv/AutomaticsS.csv");
+	
+}
+
+
+function action(filename) {
+	open(filename);
+    run("8-bit");
+    setAutoThreshold("Default");
+    roiManager("Open",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+".roi");
+    roiManager("Select", 0);
+    run("Analyze Particles...", "size=10-5000 display include summarize record");
+    roiManager("Deselect");
+    roiManager("Delete");
+    selectWindow("Results");
+    saveAs("Results",getDirectory("image")+"RoiCsv/"+substring(File.name,0,2)+".csv");
+    run("Clear Results");
+    close();
+}
+
